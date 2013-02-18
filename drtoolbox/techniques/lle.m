@@ -1,4 +1,4 @@
-function [mappedX, mapping] = lle(X, no_dims, k, eig_impl)
+function [mappedX, mapping] = lle(X, no_dims, k, eig_impl, benchmark)
 %LLE Runs the locally linear embedding algorithm
 %
 %   mappedX = lle(X, no_dims, k, eig_impl)
@@ -28,14 +28,24 @@ function [mappedX, mapping] = lle(X, no_dims, k, eig_impl)
     if ~exist('eig_impl', 'var')
         eig_impl = 'Matlab';
     end
+    if ~exist('benchmark', 'var')
+        benchmark = 0;
+    end
 
     % Get dimensionality and number of dimensions
     [n, d] = size(X);
 
     % Compute pairwise distances and find nearest neighbors (vectorized implementation)
-    disp('Finding nearest neighbors...');    
+    if ~benchmark
+        disp('Finding nearest neighbors...');
+    else
+        tstart = tic;
+    end
     [distance, neighborhood] = find_nn(X, k);
-    
+    if benchmark
+        fprintf('[benchmark] Neighbors search took %.2f seconds.\n', toc(tstart));
+    end
+
     % Identify largest connected component of the neighborhood graph
     blocks = components(distance)';
     count = zeros(1, max(blocks));
@@ -44,7 +54,7 @@ function [mappedX, mapping] = lle(X, no_dims, k, eig_impl)
     end
     [count, block_no] = max(count);
     conn_comp = find(blocks == block_no); 
-    
+
     % Update the neighborhood relations
     tmp = 1:n;
     tmp = tmp(conn_comp);
@@ -60,11 +70,15 @@ function [mappedX, mapping] = lle(X, no_dims, k, eig_impl)
     n = numel(conn_comp);
     X = X(conn_comp,:)';    
     max_k = size(neighborhood, 1);
-    
+
     % Find reconstruction weights for all points by solving the MSE problem 
     % of reconstructing a point from each neighbours. A used constraint is 
     % that the sum of the reconstruction weights for a point should be 1.
-    disp('Compute reconstruction weights...');
+    if ~benchmark
+        disp('Compute reconstruction weights...');
+    else
+        tweights = tic;
+    end
     if k > d 
         tol = 1e-5;
     else
@@ -83,6 +97,9 @@ function [mappedX, mapping] = lle(X, no_dims, k, eig_impl)
         wi = C \ ones(kt, 1);                                   % Solve linear system
         wi = wi / sum(wi);                                      % Make sure that sum is 1
         W(:,i) = [wi; nan(max_k - kt, 1)];
+    end
+    if benchmark
+        fprintf('[benchmark] LLE weight computation took %.2f seconds.\n', toc(tweights));
     end
 
     % Now that we have the reconstruction weights matrix, we define the 
@@ -104,7 +121,11 @@ function [mappedX, mapping] = lle(X, no_dims, k, eig_impl)
 	M(isinf(M)) = 0;
     
     % The embedding is computed from the bottom eigenvectors of this cost matrix
-	disp('Compute embedding (solve eigenproblem)...');
+    if ~benchmark
+        disp('Compute embedding (solve eigenproblem)...');
+    else
+        teigen = tic;
+    end;
     tol = 0;
     if strcmp(eig_impl, 'JDQR')
         options.Disp = 0;
@@ -117,6 +138,9 @@ function [mappedX, mapping] = lle(X, no_dims, k, eig_impl)
         [mappedX, eigenvals] = eigs(M + eps * eye(n), no_dims + 1, tol, options);          % only need bottom (no_dims + 1) eigenvectors
     end
     [eigenvals, ind] = sort(diag(eigenvals), 'ascend');
+    if benchmark
+        fprintf('[benchmark] %s eigendecomposition took %.2f seconds.\n', eig_impl, toc(teigen));
+    end
     if size(mappedX, 2) < no_dims + 1
 		no_dims = size(mappedX, 2) - 1;
 		warning(['Target dimensionality reduced to ' num2str(no_dims) '...']);
@@ -131,3 +155,7 @@ function [mappedX, mapping] = lle(X, no_dims, k, eig_impl)
     mapping.val = eigenvals;
     mapping.conn_comp = conn_comp;
     mapping.nbhd = distance;
+
+    if benchmark
+        fprintf('[benchmark] Embedding with LLE took %.2f seconds.\n', toc(tstart));
+    end
