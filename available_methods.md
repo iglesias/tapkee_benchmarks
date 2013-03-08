@@ -1,4 +1,4 @@
-| Method											| SciKits | Tapkee | Drtoolbox |
+| Method											| SciKits | Tapkee | MTfDR     |
 | ------------------------------------------------- |:------: | :----: | :-------: |
 | Principal Component Analysis (PCA)				| (+)     | (+)    | (+)       |
 | Probabilistic PCA									| (+)     | (-)    | (+)       |
