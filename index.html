@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Tapkee : Benchmarks and comparisons" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Tapkee</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/lisitsyn/tapkee_jmlr_benchmarks">View on GitHub</a>
+
+          <h1 id="project_title">Tapkee</h1>
+          <h2 id="project_tagline">Benchmarks and comparisons</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/lisitsyn/tapkee_jmlr_benchmarks/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/lisitsyn/tapkee_jmlr_benchmarks/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>This repository includes <a href="benchmark.py">a script</a> that can be used to 
+benchmark various implementations of dimension reduction algorithms. Currently the
+script supports three modes:</p>
+
+<ul>
+<li>
+<em>jmlr</em>. Reproduce comparison table from the JMLR MLOSS submission of paper on Tapkee.</li>
+<li>
+<em>all</em>. Run all Tapkee algorithms on all included datasets and output walltime.</li>
+<li>
+<em>scaling</em>. Measure speedups caused by increasing number of used threads.</li>
+</ul><p>To run the script with some mode use <code>python benchmark.py [mode]</code> where mode is any of the modes listed above.</p>
+
+<p>This repository also includes methods availability table that can be found <a href="available_methods.md">here</a>.</p>
+
+<p>Included libraries:</p>
+
+<ul>
+<li><p><a href="http://lisitsyn.github.com/tapkee/">Tapkee</a>. This repository includes binary of application from the Tapkee library v0.1. Requires no installation.</p></li>
+<li><p><a href="http://scikit-learn.org/stable/">Scikit-learn</a>. This repository includes Scikit-learn v.0.13.1 with no patches applied. To install Scikit-learn
+cd to scikit-learn/sklearn and run <code>python setup.py build</code> and <code>sudo python setup.py install</code> commands.</p></li>
+<li><p><a href="http://waffles.sourceforge.net/">Waffles</a>. This repository includes version 2012-08-31 of Waffles library with small patch to support
+time measuring. To build Waffles cd to <code>waffles/src</code> and run <code>sudo make install</code> command. After that, binaries will 
+be located in the <code>waffles/bin/</code> folder.</p></li>
+<li><p><a href="http://homepage.tudelft.nl/19j49/Matlab_Toolbox_for_Dimensionality_Reduction.html">Matlab Toolbox for Dimensionality Reduction (MTfDR)</a>. This 
+repository includes <code>MTfDR v.08 April 2012</code> without any changes. MTfDR requires no installation.</p></li>
+</ul><h1>License</h1>
+
+<p>Included libraries are distributed under their own licenses without any changes from our side. All other included files
+are free and you may use, modify and redistribute it for any purposes without limitations and permissions.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Tapkee maintained by <a href="https://github.com/lisitsyn">lisitsyn</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
