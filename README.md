@@ -12,17 +12,17 @@ This repository also includes methods availability table that can be found [here
 
 Included libraries:
 
-- *Tapkee*. This repository includes binary of application from the Tapkee library v0.1. Requires no installation.
+- [Tapkee](http://lisitsyn.github.com/tapkee/). This repository includes binary of application from the Tapkee library v0.1. Requires no installation.
 
-- *Scikit-learn*. This repository includes Scikit-learn v.0.13.1 with no patches applied. To install Scikit-learn
-cd to scikit-learn/sklearn and run `python setup.py build` and 'sudo python setup.py install' commands.
+- [Scikit-learn](http://scikit-learn.org/stable/). This repository includes Scikit-learn v.0.13.1 with no patches applied. To install Scikit-learn
+cd to scikit-learn/sklearn and run `python setup.py build` and `sudo python setup.py install` commands.
 
-- *Waffles*. This repository includes version 2012-08-31 of Waffles library with small patch to support
-time measuring. To build Waffles cd to waffles/src and run 'sudo make install' command. After that, binaries will 
-be located in the waffles/bin/ folder.
+- [Waffles](http://waffles.sourceforge.net/). This repository includes version 2012-08-31 of Waffles library with small patch to support
+time measuring. To build Waffles cd to `waffles/src` and run `sudo make install` command. After that, binaries will 
+be located in the `waffles/bin/` folder.
 
-- *Matlab Toolbox for Dimensionality Reduction (MTfDR)*. This repository includes MTfDR v.08 April 2012 without
-any changes. MTfDR requires no installation.
+- [Matlab Toolbox for Dimensionality Reduction (MTfDR)](http://homepage.tudelft.nl/19j49/Matlab_Toolbox_for_Dimensionality_Reduction.html). This 
+repository includes `MTfDR v.08 April 2012` without any changes. MTfDR requires no installation.
 
 License
 =======
