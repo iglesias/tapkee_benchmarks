@@ -1,19 +1,22 @@
-import subprocess,re, numpy
+#!/usr/bin/env python
+
+import sys, subprocess, re, numpy, multiprocessing
 from collections import defaultdict
 from time import time
 from sklearn import manifold
+
 default_k = 10
 
-def tapkee_time(datafile, method, k=default_k):
-	output = subprocess.check_output('DATAFILE=%s METHOD=%s K=%d ./tapkee_run.sh' % (datafile,method,k), shell=True)
+def tapkee_time(datafile, method, k=default_k,opts=""):
+	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./tapkee_run.sh' % (opts,datafile,method,k), shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
-def waffles_time(datafile, method, k=default_k):
-	output = subprocess.check_output('DATAFILE=%s METHOD=%s K=%d ./waffles_run.sh' % (datafile,method,k), shell=True)
+def waffles_time(datafile, method, k=default_k,opts=""):
+	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./waffles_run.sh' % (opts,datafile,method,k), shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
-def mtfdr_time(datafile, method, k=default_k):
-	output = subprocess.check_output('DATAFILE=%s METHOD=%s K=%d ./drtoolbox_run.sh' % (datafile,method,k), shell=True)
+def mtfdr_time(datafile, method, k=default_k,opts=""):
+	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./drtoolbox_run.sh' % (opts,datafile,method,k), shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
 def scikit_time(datafile, method, k=default_k):
@@ -37,6 +40,17 @@ def tapkee_performance():
 	for method in methods:
 		for dataset_name,dataset_file in datasets:
 			print '%s on %s takes %.4fs' % (method.replace('_',' ').title(), dataset_name, tapkee_time(dataset_file, method))
+
+def tapkee_scaling():
+	datasets = [('Swissroll','data/swissroll5000.dat'),('MIT-CBCL','data/cbcl.dat'),('MNIST','data/mnist2000.dat')]
+	methods = ['isomap']
+	print 'Tapkee parallel implementations benchmark'
+	for method in methods:
+		for dataset_name,dataset_file in datasets:
+			for n_threads in [i for i in xrange(1,1+2*multiprocessing.cpu_count())]:
+				omp_opt = 'OMP_NUM_THREADS=%d' % n_threads
+				time = tapkee_time(dataset_file, method, opts=omp_opt)
+				print '%s on %s with %d threads takes %.4fs' % (method.replace('_',' ').title(), dataset_name, n_threads, time)
 
 def jmlr_paper_table():
 	k = 10
@@ -75,7 +89,14 @@ def jmlr_paper_table():
 			dataset_line += implementation_element
 		dataset_line += endline
 		walltimes_table += dataset_line
-	return libraries_header + methods_header + walltimes_table
+	print libraries_header + methods_header + walltimes_table
 
-#tapkee_performance()
-#print jmlr_paper_table()
+if len(sys.argv)==2:
+	command = sys.argv[1]
+elif len(sys.argv)==1:
+	command = raw_input('Select benchmark (scaling,all,jmlr): ')
+else: 
+	sys.exit()
+
+commands = {'scaling' : tapkee_scaling, 'all' : tapkee_performance, 'jmlr' : jmlr_paper_table}
+commands[command]()
