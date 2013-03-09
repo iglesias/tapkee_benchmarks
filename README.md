@@ -1,4 +1,4 @@
-Methods availability table can be found [here](availability_table.md).
+Methods availability table can be found [here](availabile_methods.md).
 
 Tapkee
 ======
