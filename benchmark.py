@@ -57,6 +57,7 @@ def jmlr_paper_table():
 	n_updates = 5
 	time_limit = 60.0
 
+	excludes = [('Swissroll','Waffles'),('MNIST','Waffles')]
 	datasets = [('Swissroll','data/swissroll5000.dat'),('MIT-CBCL','data/cbcl.dat'),('MNIST','data/mnist2000.dat')]
 	libraries = [('Tapkee',tapkee_time), ('Scikit-learn',scikit_time), ('Waffles',waffles_time), ('MTfDR',mtfdr_time)]
 	methods = ['lle','isomap']
@@ -66,6 +67,9 @@ def jmlr_paper_table():
 			for method in methods:
 				print 'Measuring %s method implementation in %s on %s dataset' % (method,library_name,dataset_name)
 				count = 1
+				if (dataset_name,library_name) in excludes:
+					print 'Excluding'
+					continue
 				walltime = library_timer(dataset_file,method,k)
 				if walltime < time_limit:
 					for _ in xrange(n_updates-1):
