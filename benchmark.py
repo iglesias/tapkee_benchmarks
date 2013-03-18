@@ -5,24 +5,22 @@ from collections import defaultdict
 from time import time
 from sklearn import manifold
 
-default_k = 10
-
-def tapkee_time(datafile, method, k=default_k,opts=""):
+def tapkee_time(datafile, method, k, opts=""):
 	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./tapkee_run.sh' % (opts,datafile,method,k), shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
-def waffles_time(datafile, method, k=default_k,opts=""):
-	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./waffles_run.sh' % (opts,datafile,method,k), shell=True)
+def waffles_time(datafile, method, k, opts=""):
+	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./waffles_run.sh' % (opts,datafile.replace(".dat","transposed.dat"),method,k), shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
-def mtfdr_time(datafile, method, k=default_k,opts=""):
+def mtfdr_time(datafile, method, k, opts=""):
 	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./drtoolbox_run.sh' % (opts,datafile,method,k), shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
-def scikit_time(datafile, method, k=default_k):
+def scikit_time(datafile, method, k):
 	data = numpy.loadtxt(datafile)
-	methods = {'lle' : lambda x : manifold.LocallyLinearEmbedding(k,2,method='standard').fit_transform(x),
-	           'isomap' : lambda x : manifold.Isomap(k,2).fit_transform(x)}
+	methods = {'lle' : lambda x : manifold.LocallyLinearEmbedding(k,2,method='standard').fit_transform(x.T),
+	           'isomap' : lambda x : manifold.Isomap(k,2).fit_transform(x.T)}
 	t0 = time()
 	methods[method](data)
 	return time()-t0
@@ -53,27 +51,32 @@ def tapkee_scaling():
 				print '%s on %s with %d threads takes %.4fs' % (method.replace('_',' ').title(), dataset_name, n_threads, time)
 
 def jmlr_paper_table():
-	k = 10
+	default_k = 20
 	n_updates = 5
 	time_limit = 60.0
 
 	excludes = [('Swissroll','Waffles'),('MNIST','Waffles'),('AVIRIS','Waffles'),('Swissroll','MTfDR')]
-	datasets = [('Swissroll','data/swissroll5000.dat'),('MIT-CBCL','data/cbcl.dat'),('MNIST','data/mnist2000.dat'),('AVIRIS','data/aviris.dat')]
-	libraries = [('Tapkee',tapkee_time), ('Scikit-learn',scikit_time), ('Waffles',waffles_time), ('MTfDR',mtfdr_time)]
+	datasets = [('Swissroll','data/swissroll5000.dat',{}),('MIT-CBCL','data/cbcl.dat',{}),
+	            ('MNIST','data/mnist2000.dat',{}),('AVIRIS','data/aviris.dat',{"k": 150})]
+	libraries = [('Tapkee',tapkee_time), ('Scikit-learn',scikit_time), 
+			     ('Waffles',waffles_time)], ('MTfDR',mtfdr_time)]
 	methods = ['lle','isomap']
 	walltimes = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : 0.0)))
-	for dataset_name,dataset_file in datasets:
+	for dataset_name,dataset_file,dataset_options in datasets:
 		for library_name, library_timer in libraries:
 			for method in methods:
+				k_to_use = default_k
+				if "k" in dataset_options:
+					k_to_use = dataset_options["k"] 
 				print 'Measuring %s method implementation in %s on %s dataset' % (method,library_name,dataset_name)
 				count = 1
 				if (dataset_name,library_name) in excludes:
 					print 'Excluding'
 					continue
-				walltime = library_timer(dataset_file,method,k)
+				walltime = library_timer(dataset_file,method,k_to_use)
 				if walltime < time_limit:
 					for _ in xrange(n_updates-1):
-						walltime += library_timer(dataset_file,method,k)
+						walltime += library_timer(dataset_file,method,k_to_use)
 						count += 1
 				else:
 					print 'Skipping repetitions as time exceeds limit'
@@ -86,7 +89,7 @@ def jmlr_paper_table():
 	methods_header = "".join([methods_header_element for _ in libraries]) + endline
 	
 	walltimes_table = ""
-	for dataset_name,_ in datasets:
+	for dataset_name,_,_ in datasets:
 		dataset_line = '\\textit{%s} ' % dataset_name
 		for library_name,_ in libraries:
 			implementation_element = "".join(['& %.2f ' % walltimes[dataset_name][library_name][method_name] for method_name in methods])
