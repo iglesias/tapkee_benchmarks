@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+		<script>
+		function draw(data) {
+			"use strict";
+
+			var width  = 1500,
+				height = 600,
+				margin = 50;
+
+			// Get max and min from data
+			var x_extent = d3.extent(data.embedded_images, function(d) { return d.x });
+			var y_extent = d3.extent(data.embedded_images, function(d) { return d.y });
+
+			// Create the scales
+			var x_scale = d3.scale.linear()
+							.range([margin, width-margin])
+							.domain(x_extent);
+
+			var y_scale = d3.scale.linear()
+							.range([height-margin, margin])
+							.domain(y_extent);
+
+			// Plot images
+			d3.select("body")
+				.append("svg")
+				.selectAll("image")
+					.data(data.embedded_images)
+				.enter().append("image")
+					.attr("xlink:href", function(d) { return 'data/pics/faces_transparent/' + d.fname })
+					.attr("x",			function(d) { return x_scale(d.x) })
+					.attr("y",			function(d) { return y_scale(d.y) })
+					.attr("width",		50)
+					.attr("height",		50)
+		}
+		</script>
+	</head>
+
+	<body>
+		<script>
+			d3.json("data/faces.json", draw);
+		</script>
+	</body>
+</html>
