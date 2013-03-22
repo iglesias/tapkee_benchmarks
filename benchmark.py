@@ -56,10 +56,10 @@ def jmlr_paper_table():
 	time_limit = 60.0
 
 	excludes = [('Swissroll','Waffles'),('MNIST','Waffles'),('AVIRIS','Waffles'),('Swissroll','MTfDR')]
-	datasets = [('Swissroll','data/swissroll5000.dat',{}),('MIT-CBCL','data/cbcl.dat',{}),
-	            ('MNIST','data/mnist2000.dat',{}),('AVIRIS','data/aviris.dat',{"k": 150})]
+	datasets = [('Swissroll','data/swissroll5000.dat',{"k": 15}),('MIT-CBCL','data/cbcl.dat',{"k": 15}),
+			('MNIST','data/mnist2000.dat',{"k": 20}),('AVIRIS','data/aviris.dat',{"k": 150})]
 	libraries = [('Tapkee',tapkee_time), ('Scikit-learn',scikit_time), 
-			     ('Waffles',waffles_time)], ('MTfDR',mtfdr_time)]
+			     ('Waffles',waffles_time), ('MTfDR',mtfdr_time)]
 	methods = ['lle','isomap']
 	walltimes = defaultdict(lambda : defaultdict(lambda : defaultdict(lambda : 0.0)))
 	for dataset_name,dataset_file,dataset_options in datasets:
