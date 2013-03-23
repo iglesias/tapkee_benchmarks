@@ -6,7 +6,6 @@ method_name = getenv('METHOD')
 k = str2num(getenv('K'))
 
 X = load(datafile);
-X = X';
 
 if strcmp(method_name,'lle')
 	tic;

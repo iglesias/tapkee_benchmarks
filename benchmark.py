@@ -6,21 +6,26 @@ from time import time
 from sklearn import manifold
 
 def tapkee_time(datafile, method, k, opts=""):
-	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./tapkee_run.sh' % (opts,datafile,method,k), shell=True)
+	run_string = '%s DATAFILE=%s METHOD=%s K=%d ./tapkee_run.sh' % (opts,datafile,method,k)
+	print run_string
+	output = subprocess.check_output(run_string, shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
 def waffles_time(datafile, method, k, opts=""):
-	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./waffles_run.sh' % (opts,datafile.replace(".dat","transposed.dat"),method,k), shell=True)
+	run_string = '%s DATAFILE=%s METHOD=%s K=%d ./waffles_run.sh' % (opts,datafile,method,k)
+	print run_string
+	output = subprocess.check_output(run_string, shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
 def mtfdr_time(datafile, method, k, opts=""):
-	output = subprocess.check_output('%s DATAFILE=%s METHOD=%s K=%d ./drtoolbox_run.sh' % (opts,datafile,method,k), shell=True)
+	run_string = '%s DATAFILE=%s METHOD=%s K=%d ./drtoolbox_run.sh' % (opts,datafile,method,k)
+	output = subprocess.check_output(run_string, shell=True)
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
 def scikit_time(datafile, method, k):
 	data = numpy.loadtxt(datafile)
-	methods = {'lle' : lambda x : manifold.LocallyLinearEmbedding(k,2,method='standard').fit_transform(x.T),
-	           'isomap' : lambda x : manifold.Isomap(k,2).fit_transform(x.T)}
+	methods = {'lle' : lambda x : manifold.LocallyLinearEmbedding(k,2,method='standard').fit_transform(x),
+	           'isomap' : lambda x : manifold.Isomap(k,2).fit_transform(x)}
 	t0 = time()
 	methods[method](data)
 	return time()-t0
