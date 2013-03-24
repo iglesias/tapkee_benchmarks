@@ -19,7 +19,10 @@ def waffles_time(datafile, method, k, opts=""):
 
 def mtfdr_time(datafile, method, k, opts=""):
 	run_string = '%s DATAFILE=%s METHOD=%s K=%d ./drtoolbox_run.sh' % (opts,datafile,method,k)
+	print run_string
 	output = subprocess.check_output(run_string, shell=True)
+	# Print log info regarding whether Octave/Matlab has been used
+	print output.split('\n')[0]
 	return sum([float(x) for x in re.findall('\d+.\d+',output)])
 
 def scikit_time(datafile, method, k):
