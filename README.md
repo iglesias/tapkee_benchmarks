@@ -12,7 +12,7 @@ This repository also includes methods availability table that can be found [here
 
 Included libraries:
 
-- [Tapkee](http://lisitsyn.github.com/tapkee/). This repository includes binary of application from the Tapkee library v0.1. Requires no installation.
+- [Tapkee](http://tapkee.lisitsyn.me/). This repository includes binary of application from the Tapkee library v0.1. Requires no installation.
 
 - [Scikit-learn](http://scikit-learn.org/stable/). This repository includes Scikit-learn v.0.13.1 with no patches applied. To install Scikit-learn
 cd to scikit-learn/sklearn and run `python setup.py build` and `sudo python setup.py install` commands.
